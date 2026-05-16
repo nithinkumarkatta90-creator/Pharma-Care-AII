@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../App';
-import { aiService } from '../services/aiService';
+import { trustedMedicineService } from '../services/trustedMedicineService';
+import { TrustedMedicineRecord } from '../types/trusted-medicine';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
@@ -22,7 +23,6 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react';
-import Markdown from 'react-markdown';
 import { toast } from 'sonner';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -48,7 +48,7 @@ export default function MedicineInfo() {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [medInfo, setMedInfo] = useState<string | null>(null);
+  const [medInfo, setMedInfo] = useState<TrustedMedicineRecord | null>(null);
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
@@ -64,17 +64,25 @@ export default function MedicineInfo() {
 
     setSearching(true);
     try {
-      const info = await aiService.getMedicineInfo(query);
+      const info = await trustedMedicineService.getBestVerifiedRecord(query);
+      if (!info) {
+        setMedInfo(null);
+        toast.error('No verified trusted-source record found for this medicine.');
+        return;
+      }
+
       setMedInfo(info);
 
       await addDoc(collection(db, 'medicine_search'), {
         uid: user.uid,
         medicineName: query,
-        details: info,
+        trustedRecordId: info.id,
+        trustedCollection: info.collectionName,
+        citations: info.citations || [],
         createdAt: new Date().toISOString()
       });
     } catch (error: any) {
-      toast.error('Failed to get medicine info');
+      toast.error('Failed to load trusted medicine data');
     } finally {
       setSearching(false);
     }
@@ -215,42 +223,96 @@ export default function MedicineInfo() {
                         {searchQuery}
                       </CardTitle>
                       <Badge className="bg-emerald-500/10 text-emerald-500 border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">
-                        Verified Data
+                        Trusted Source
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="p-8">
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <Markdown>{medInfo}</Markdown>
-                    </div>
-                    
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-6 bg-rose-50 dark:bg-rose-900/10 rounded-3xl border border-rose-100 dark:border-rose-900/20">
-                        <div className="flex items-center gap-3 mb-3">
-                          <AlertTriangle className="w-5 h-5 text-rose-600" />
-                          <h5 className="font-black text-rose-900 dark:text-rose-400 text-sm uppercase tracking-wider">Critical Warnings</h5>
-                        </div>
-                        <p className="text-xs text-rose-800 dark:text-rose-300 font-medium leading-relaxed">
-                          Always check for interactions with other medications. Do not exceed the prescribed dose. Seek immediate help if you experience severe allergic reactions.
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-xl font-black text-foreground">{medInfo.name}</h3>
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {medInfo.summary || medInfo.sourceText || 'Verified medicine record available from trusted source data.'}
                         </p>
                       </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {medInfo.genericName && (
+                          <div className="p-4 rounded-2xl bg-muted/30">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Generic Name</h4>
+                            <p className="font-bold mt-1">{medInfo.genericName}</p>
+                          </div>
+                        )}
+                        {medInfo.category && (
+                          <div className="p-4 rounded-2xl bg-muted/30">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Category</h4>
+                            <p className="font-bold mt-1">{medInfo.category}</p>
+                          </div>
+                        )}
+                        {medInfo.dosageForms?.length ? (
+                          <div className="p-4 rounded-2xl bg-muted/30">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Dosage Forms</h4>
+                            <p className="font-bold mt-1">{medInfo.dosageForms.join(', ')}</p>
+                          </div>
+                        ) : null}
+                        {medInfo.storage && (
+                          <div className="p-4 rounded-2xl bg-muted/30">
+                            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Storage</h4>
+                            <p className="font-bold mt-1">{medInfo.storage}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {medInfo.uses?.length ? (
+                        <div>
+                          <h4 className="text-sm font-black uppercase tracking-widest text-muted-foreground mb-3">Uses</h4>
+                          <ul className="space-y-2 text-sm">
+                            {medInfo.uses.map((item) => <li key={item}>{item}</li>)}
+                          </ul>
+                        </div>
+                      ) : null}
+
+                      {medInfo.warnings?.length ? (
+                        <div className="p-6 bg-rose-50 dark:bg-rose-900/10 rounded-3xl border border-rose-100 dark:border-rose-900/20">
+                          <div className="flex items-center gap-3 mb-3">
+                            <AlertTriangle className="w-5 h-5 text-rose-600" />
+                            <h5 className="font-black text-rose-900 dark:text-rose-400 text-sm uppercase tracking-wider">Warnings From Source</h5>
+                          </div>
+                          <ul className="text-xs text-rose-800 dark:text-rose-300 font-medium leading-relaxed space-y-2">
+                            {medInfo.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+                          </ul>
+                        </div>
+                      ) : null}
+
                       <div className="p-6 bg-blue-50 dark:bg-blue-900/10 rounded-3xl border border-blue-100 dark:border-blue-900/20">
                         <div className="flex items-center gap-3 mb-3">
-                          <Brain className="w-5 h-5 text-blue-600" />
-                          <h5 className="font-black text-blue-900 dark:text-blue-400 text-sm uppercase tracking-wider">AI Insights</h5>
+                          <Info className="w-5 h-5 text-blue-600" />
+                          <h5 className="font-black text-blue-900 dark:text-blue-400 text-sm uppercase tracking-wider">Citations</h5>
                         </div>
-                        <p className="text-xs text-blue-800 dark:text-blue-300 font-medium leading-relaxed">
-                          This medication is commonly prescribed for {selectedCategory !== 'All' ? selectedCategory : 'general'} conditions. Ensure consistent timing for optimal efficacy.
-                        </p>
+                        <div className="space-y-3">
+                          {(medInfo.citations || []).map((citation, index) => (
+                            <div key={`${citation.sourceKey}-${index}`} className="text-xs text-blue-900 dark:text-blue-300">
+                              <p className="font-black">{citation.sourceName}</p>
+                              <p>Retrieved: {citation.retrievedAt}</p>
+                              {citation.revisionDate && <p>Revision: {citation.revisionDate}</p>}
+                              {citation.sourceUrl && (
+                                <a className="font-bold underline" href={citation.sourceUrl} target="_blank" rel="noreferrer">
+                                  View source
+                                </a>
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                    
                   </CardContent>
                 </Card>
 
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-2xl flex gap-3">
                   <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0" />
                   <p className="text-xs text-amber-800 dark:text-amber-400 font-medium leading-relaxed">
-                    This information is for educational purposes only. AI-generated medical data can be inaccurate. Never change your medication or dosage without consulting a licensed healthcare professional.
+                    This screen only displays records imported from trusted sources. Gemini is not used as a medicine data source. Never change your medication or dosage without consulting a licensed healthcare professional.
                   </p>
                 </div>
               </motion.div>
@@ -261,7 +323,7 @@ export default function MedicineInfo() {
                 </div>
                 <div className="max-w-xs">
                   <h3 className="text-xl font-bold text-foreground">No Drug Selected</h3>
-                  <p className="text-sm text-muted-foreground mt-2">Search for a medicine to unlock professional-grade AI drug intelligence and safety data.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Search for a medicine in the verified Firestore source database.</p>
                 </div>
               </div>
             )}

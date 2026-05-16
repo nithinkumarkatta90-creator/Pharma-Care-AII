@@ -187,7 +187,13 @@ async function startServer() {
     try {
       const { drugName, monograph } = req.body;
       const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-      const prompt = `Explain the following Indian Pharmacopoeia (IP) monograph for ${drugName} in very simple, easy-to-understand language for a non-medical person. Focus on what it is, how to store it, and what the tests mean in simple terms.
+      const prompt = `Explain the following trusted-source Indian Pharmacopoeia (IP) monograph for ${drugName} in very simple, easy-to-understand language for a non-medical person.
+      
+      Strict rules:
+      - Use only the monograph data provided below.
+      - Do not add dosage, warnings, uses, interactions, or claims that are not present in the provided monograph.
+      - If information is missing, say it is not available in the provided trusted record.
+      - Clearly state that this is an explanation of source data, not medical advice.
       
       Monograph Data:
       ${JSON.stringify(monograph, null, 2)}`;

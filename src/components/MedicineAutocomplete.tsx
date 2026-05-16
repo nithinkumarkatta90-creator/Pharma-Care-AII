@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Input } from './ui/input';
 import { Loader2, Search } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { trustedMedicineService } from '../services/trustedMedicineService';
 
 interface MedicineAutocompleteProps {
   value: string;
@@ -36,11 +37,8 @@ export function MedicineAutocomplete({ value, onChange, placeholder, className, 
 
       setLoading(true);
       try {
-        const response = await fetch(`/api/ip-database?q=${value}`);
-        if (response.ok) {
-          const data = await response.json();
-          setSuggestions(data);
-        }
+        const data = await trustedMedicineService.search(value);
+        setSuggestions(data);
       } catch (error) {
         console.error('Failed to fetch suggestions', error);
       } finally {
@@ -87,7 +85,9 @@ export function MedicineAutocomplete({ value, onChange, placeholder, className, 
               }}
             >
               <div className="font-medium text-slate-900">{item.name}</div>
-              <div className="text-xs text-slate-500">{item.category}</div>
+              <div className="text-xs text-slate-500">
+                {item.category || item.genericName || item.collectionName}
+              </div>
             </button>
           ))}
         </div>

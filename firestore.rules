@@ -1,8 +1,42 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /ip_drugs/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /drug_labels/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /drug_names/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /drug_classes/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /regulatory_alerts/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    match /verified_medicines/{document=**} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if isSignedIn();
     }
   }
 }

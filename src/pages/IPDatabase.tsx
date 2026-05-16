@@ -479,7 +479,7 @@ export default function IPDatabase() {
                                         <div className="space-y-2">
                                           <h4 className="text-lg font-bold text-slate-900">AI Monograph Explainer</h4>
                                           <p className="text-sm text-slate-500 max-w-md mx-auto">
-                                            Let Gemini explain this complex monograph in simple, everyday language.
+                                            Let Gemini explain only the selected trusted monograph data in simple, everyday language.
                                           </p>
                                         </div>
                                         <Button 
@@ -495,7 +495,7 @@ export default function IPDatabase() {
                                       <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 relative">
                                         <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center gap-1">
                                           <Sparkles className="w-3 h-3" />
-                                          AI GENERATED INSIGHT
+                                          SOURCE EXPLANATION
                                         </div>
                                         <div className="prose prose-sm max-w-none text-blue-900 leading-relaxed">
                                           {aiExplanation.split('\n').map((line, i) => (

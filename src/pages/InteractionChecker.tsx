@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { collection, addDoc, query, where, onSnapshot, orderBy, limit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../App';
-import { aiService } from '../services/aiService';
+import { trustedMedicineService } from '../services/trustedMedicineService';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { Button, buttonVariants } from '../components/ui/button';
@@ -93,7 +93,37 @@ export default function InteractionChecker() {
 
     setLoading(true);
     try {
-      const interactionResult = await aiService.checkInteractions(activeMeds);
+      const verifiedRecords = await Promise.all(
+        activeMeds.map(async (medicine) => ({
+          medicine,
+          record: await trustedMedicineService.getBestVerifiedRecord(medicine),
+        })),
+      );
+      const missingRecords = verifiedRecords.filter((item) => !item.record);
+
+      if (missingRecords.length > 0) {
+        toast.error(`No trusted record found for: ${missingRecords.map((item) => item.medicine).join(', ')}`);
+        setResult(null);
+        return;
+      }
+
+      const interactionResult = [
+        '### Trusted-source interaction check',
+        '',
+        'Gemini is disabled as a drug-interaction source. This screen only verifies that each entered medicine exists in the trusted Firestore medicine database.',
+        '',
+        'A true interaction result requires a curated interaction source, such as structured interaction data licensed from a clinical drug database or manually entered pharmacist-reviewed interaction records.',
+        '',
+        '### Verified medicines',
+        ...verifiedRecords.map((item) => {
+          const citations = item.record?.citations?.map((citation) => citation.sourceName).join(', ') || 'No citation listed';
+          return `- **${item.record?.name || item.medicine}**: ${citations}`;
+        }),
+        '',
+        '### Safety note',
+        'Do not combine medicines based on this screen alone. Ask a licensed pharmacist or doctor to review interactions, contraindications, dose, age, pregnancy status, kidney/liver disease, and allergies.',
+      ].join('\n');
+
       setResult(interactionResult);
 
       if (user) {
@@ -101,12 +131,13 @@ export default function InteractionChecker() {
           uid: user.uid,
           medicines: activeMeds,
           result: interactionResult,
+          sourcePolicy: 'trusted-source-only-no-gemini',
           createdAt: new Date().toISOString()
         });
       }
-      toast.success('Interaction check complete');
+      toast.success('Trusted source verification complete');
     } catch (error) {
-      toast.error('Failed to check interactions');
+      toast.error('Failed to verify trusted medicine records');
     } finally {
       setLoading(false);
     }
@@ -216,7 +247,7 @@ export default function InteractionChecker() {
               <CardContent className="prose prose-sm max-w-none text-amber-900">
                 <Markdown>{result}</Markdown>
                 <div className="mt-6 p-4 bg-white/50 rounded-lg border border-amber-200 text-xs italic">
-                  Disclaimer: This information is AI-generated and should not replace professional medical advice. Always consult your doctor or pharmacist before combining medications.
+                  Disclaimer: Gemini is not used as a drug-interaction source. This result only verifies trusted source records and must not replace professional medical advice.
                 </div>
               </CardContent>
             </Card>
