@@ -1,0 +1,5 @@
+{
+  "name": "PHARMA CARE AI",
+  "description": "An advanced AI-powered prescription scanner and healthcare intelligence platform. Extract, analyze, and interpret medical prescriptions with professional-grade accuracy.",
+  "requestFramePermissions": ["camera"]
+}

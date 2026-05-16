@@ -1,0 +1,9 @@
+{
+  "name": "PHARMA CARE AI",
+  "short_name": "PHARMA CARE",
+  "description": "An advanced AI-powered prescription scanner and healthcare intelligence platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb"
+}

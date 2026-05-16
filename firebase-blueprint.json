@@ -1,0 +1,452 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "age": { "type": "number" },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Other"] },
+        "weight": { "type": "number" },
+        "disease": { "type": "string" },
+        "healthScore": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "Reminder": {
+      "title": "Reminder",
+      "description": "Medicine reminders",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "dosage": { "type": "string" },
+        "medicineType": { "type": "string", "enum": ["Tablet", "Syrup", "Capsule", "Injection"] },
+        "frequency": { "type": "string", "enum": ["Once", "Twice", "Thrice", "Custom"] },
+        "times": { "type": "array", "items": { "type": "string" } },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "beforeAfterFood": { "type": "string", "enum": ["Before", "After"] },
+        "repeatType": { "type": "string", "enum": ["Daily", "Weekly", "Monthly"] },
+        "notes": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "medicineName", "times"]
+    },
+    "ReminderLog": {
+      "title": "ReminderLog",
+      "description": "Logs for medicine adherence",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "reminderId": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "scheduledTime": { "type": "string" },
+        "takenTime": { "type": "string" },
+        "status": { "type": "string", "enum": ["Taken", "Missed", "Snoozed"] },
+        "date": { "type": "string", "format": "date" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "reminderId", "status", "date"]
+    },
+    "ChatHistory": {
+      "title": "ChatHistory",
+      "description": "AI Chat history",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "messages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": { "type": "string", "enum": ["user", "model"] },
+              "content": { "type": "string" },
+              "timestamp": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid"]
+    },
+    "DiagnosisHistory": {
+      "title": "DiagnosisHistory",
+      "description": "AI Diagnosis results",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "symptoms": { "type": "string" },
+        "duration": { "type": "string" },
+        "severity": { "type": "string", "enum": ["Mild", "Moderate", "Severe"] },
+        "age": { "type": "number" },
+        "gender": { "type": "string" },
+        "weight": { "type": "number" },
+        "existingDiseases": { "type": "string" },
+        "allergies": { "type": "string" },
+        "currentMedicines": { "type": "string" },
+        "result": { "type": "string" },
+        "isEmergency": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "result"]
+    },
+    "LabReport": {
+      "title": "LabReport",
+      "description": "Lab report analysis",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fileName": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "analysis": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid"]
+    },
+    "MedicineSearch": {
+      "title": "MedicineSearch",
+      "description": "Medicine search history",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "details": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "medicineName"]
+    },
+    "DrugInteraction": {
+      "title": "DrugInteraction",
+      "description": "Drug interaction checks",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "medicines": { "type": "array", "items": { "type": "string" } },
+        "result": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "medicines"]
+    },
+    "DietPlan": {
+      "title": "DietPlan",
+      "description": "Disease-based diet plans",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "disease": { "type": "string" },
+        "plan": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "disease"]
+    },
+    "QRScan": {
+      "title": "QRScan",
+      "description": "Medicine QR scan history",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "data": { "type": "string" },
+        "verification": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "data"]
+    },
+    "RxScan": {
+      "title": "RxScan",
+      "description": "Prescription scan history",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "extractedMedicines": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid"]
+    },
+    "SideEffectPrediction": {
+      "title": "SideEffectPrediction",
+      "description": "AI predicted side effects",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "age": { "type": "number" },
+        "existingDiseases": { "type": "string" },
+        "result": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "medicineName", "result"]
+    },
+    "Medication": {
+      "title": "Medication",
+      "description": "Patient medication record",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "drugName": { "type": "string" },
+        "dose": { "type": "string" },
+        "frequency": { "type": "string" },
+        "route": { "type": "string" },
+        "duration": { "type": "string" },
+        "indication": { "type": "string" },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "prescribingDoctor": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "Completed", "Missed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "drugName", "dose", "frequency", "status"]
+    },
+    "PatientMedicalHistory": {
+      "title": "PatientMedicalHistory",
+      "description": "Comprehensive patient medical history",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "patientName": { "type": "string" },
+        "age": { "type": "number" },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Other"] },
+        "height": { "type": "number" },
+        "weight": { "type": "number" },
+        "bmi": { "type": "number" },
+        "bloodGroup": { "type": "string" },
+        "allergies": { "type": "string" },
+        "chronicDiseases": { "type": "array", "items": { "type": "string" } },
+        "currentMedications": { "type": "array", "items": { "type": "string" } },
+        "pastSurgeries": { "type": "string" },
+        "hospitalizations": { "type": "string" },
+        "familyHistory": { "type": "string" },
+        "lifestyleSmoking": { "type": "string", "enum": ["Yes", "No"] },
+        "lifestyleAlcohol": { "type": "string", "enum": ["Yes", "No"] },
+        "dietType": { "type": "string", "enum": ["Veg", "Non-Veg", "Mixed"] },
+        "emergencyContactName": { "type": "string" },
+        "emergencyContactNumber": { "type": "string" },
+        "vaccinationHistory": { "type": "string" },
+        "doctorNotes": { "type": "string" },
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fileName": { "type": "string" },
+              "fileUrl": { "type": "string" },
+              "uploadedAt": { "type": "string", "format": "date-time" },
+              "fileType": { "type": "string" }
+            }
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "patientName"]
+    },
+    "VerifiedMedicine": {
+      "title": "VerifiedMedicine",
+      "description": "Database of genuine medicines",
+      "type": "object",
+      "properties": {
+        "medicineName": { "type": "string" },
+        "approvalNo": { "type": "string" },
+        "batchNo": { "type": "string" },
+        "manufacturer": { "type": "string" },
+        "expDate": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["Genuine", "Fake"] }
+      },
+      "required": ["medicineName", "approvalNo", "batchNo", "status"]
+    },
+    "QRScanRecord": {
+      "title": "QRScanRecord",
+      "description": "Record of a medicine QR scan",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "qrRawData": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "approvalNo": { "type": "string" },
+        "batchNo": { "type": "string" },
+        "manufacturer": { "type": "string" },
+        "expDate": { "type": "string" },
+        "scanResult": { "type": "string", "enum": ["Genuine", "Not Verified", "Expired", "Fake"] },
+        "scannedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "qrRawData", "scanResult"]
+    },
+    "FakeReport": {
+      "title": "FakeReport",
+      "description": "Report of a suspected counterfeit medicine",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "medicineName": { "type": "string" },
+        "batchNo": { "type": "string" },
+        "approvalNo": { "type": "string" },
+        "manufacturer": { "type": "string" },
+        "qrRawData": { "type": "string" },
+        "reportReason": { "type": "string" },
+        "reportedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "medicineName", "reportReason"]
+    },
+    "MedicalProfile": {
+      "title": "MedicalProfile",
+      "description": "Patient medical profile for diet recommendations",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "age": { "type": "number" },
+        "gender": { "type": "string" },
+        "height": { "type": "number" },
+        "weight": { "type": "number" },
+        "foodPreference": { "type": "string", "enum": ["Veg", "Non-Veg"] },
+        "allergies": { "type": "string" },
+        "selectedDiseases": { "type": "array", "items": { "type": "string" } },
+        "weightGoal": { "type": "string", "enum": ["Loss", "Gain", "Maintain"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid"]
+    },
+    "DetailedDietPlan": {
+      "title": "DetailedDietPlan",
+      "description": "Comprehensive AI-generated diet plan",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "diseases": { "type": "array", "items": { "type": "string" } },
+        "bmi": { "type": "number" },
+        "caloriesEstimate": { "type": "string" },
+        "foodsToEat": { "type": "array", "items": { "type": "string" } },
+        "foodsToAvoid": { "type": "array", "items": { "type": "string" } },
+        "meals": {
+          "type": "object",
+          "properties": {
+            "breakfast": { "type": "string" },
+            "lunch": { "type": "string" },
+            "dinner": { "type": "string" },
+            "snack": { "type": "string" }
+          }
+        },
+        "weeklyPlan": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "day": { "type": "string" },
+              "breakfast": { "type": "string" },
+              "lunch": { "type": "string" },
+              "dinner": { "type": "string" }
+            }
+          }
+        },
+        "lifestyleAdvice": { "type": "string" },
+        "waterIntake": { "type": "string" },
+        "exercise": { "type": "string" },
+        "warnings": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "diseases", "createdAt"]
+    },
+    "IPDrug": {
+      "title": "IPDrug",
+      "description": "Indian Pharmacopoeia drug database",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "dosage": { "type": "string" },
+        "sideEffects": { "type": "array", "items": { "type": "string" } },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "category"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/reminders/{reminderId}": {
+      "schema": "Reminder",
+      "description": "Medicine reminders"
+    },
+    "/chat_history/{chatId}": {
+      "schema": "ChatHistory",
+      "description": "AI chat history"
+    },
+    "/diagnosis_history/{diagId}": {
+      "schema": "DiagnosisHistory",
+      "description": "Diagnosis history"
+    },
+    "/lab_reports/{reportId}": {
+      "schema": "LabReport",
+      "description": "Lab reports"
+    },
+    "/medicine_search/{searchId}": {
+      "schema": "MedicineSearch",
+      "description": "Medicine search history"
+    },
+    "/drug_interactions/{interactionId}": {
+      "schema": "DrugInteraction",
+      "description": "Drug interaction history"
+    },
+    "/diet_plans/{planId}": {
+      "schema": "DietPlan",
+      "description": "Diet plans"
+    },
+    "/qr_scans/{scanId}": {
+      "schema": "QRScan",
+      "description": "QR scan history"
+    },
+    "/rx_scans/{rxId}": {
+      "schema": "RxScan",
+      "description": "Prescription scans"
+    },
+    "/side_effect_predictions/{predictionId}": {
+      "schema": "SideEffectPrediction",
+      "description": "Side effect predictions"
+    },
+    "/medications/{medId}": {
+      "schema": "Medication",
+      "description": "Patient medication records"
+    },
+    "/patient_medical_history/{historyId}": {
+      "schema": "PatientMedicalHistory",
+      "description": "Patient medical history records"
+    },
+    "/reminder_logs/{logId}": {
+      "schema": "ReminderLog",
+      "description": "Medicine adherence logs"
+    },
+    "/verifiedMedicines/{medId}": {
+      "schema": "VerifiedMedicine",
+      "description": "Genuine medicine database"
+    },
+    "/qrScans/{scanId}": {
+      "schema": "QRScanRecord",
+      "description": "QR scan history"
+    },
+    "/fakeReports/{reportId}": {
+      "schema": "FakeReport",
+      "description": "Counterfeit medicine reports"
+    },
+    "/medical_profiles/{profileId}": {
+      "schema": "MedicalProfile",
+      "description": "User medical profiles"
+    },
+    "/detailed_diet_plans/{planId}": {
+      "schema": "DetailedDietPlan",
+      "description": "Detailed diet plans"
+    },
+    "/ip_drugs/{drugId}": {
+      "schema": "IPDrug",
+      "description": "Indian Pharmacopoeia drug database"
+    }
+  }
+}
