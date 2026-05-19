@@ -17,7 +17,6 @@ const PatientProfile = lazy(() => import('./pages/PatientProfile'));
 const MedicationEntry = lazy(() => import('./pages/MedicationEntry'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Chat = lazy(() => import('./pages/Chat'));
-const Diagnosis = lazy(() => import('./pages/Diagnosis'));
 const LabReports = lazy(() => import('./pages/LabReports'));
 const MedicineInfo = lazy(() => import('./pages/MedicineInfo'));
 const DietPlans = lazy(() => import('./pages/DietPlans'));
@@ -29,14 +28,11 @@ const QRScanner = lazy(() => import('./pages/QRScanner'));
 const QRVerify = lazy(() => import('./pages/QRVerify'));
 const History = lazy(() => import('./pages/History'));
 const Profile = lazy(() => import('./pages/Profile'));
-const RxScanner = lazy(() => import('./pages/RxScanner'));
 const InteractionChecker = lazy(() => import('./pages/InteractionChecker'));
 const SideEffects = lazy(() => import('./pages/SideEffects'));
 const IPDatabase = lazy(() => import('./pages/IPDatabase'));
 const MedicalHistory = lazy(() => import('./pages/MedicalHistory'));
 const MedicalHistoryTimeline = lazy(() => import('./pages/MedicalHistoryTimeline'));
-const SkinAnalyzer = lazy(() => import('./pages/SkinAnalyzer'));
-const MentalHealth = lazy(() => import('./pages/MentalHealth'));
 const Reminders = lazy(() => import('./pages/Reminders'));
 const AddReminder = lazy(() => import('./pages/AddReminder'));
 const ReminderLogs = lazy(() => import('./pages/ReminderLogs'));
@@ -88,7 +84,6 @@ export default function App() {
                   <Route path="/patient-profile" element={<PatientProfile />} />
                   <Route path="/medication-entry" element={<MedicationEntry />} />
                   <Route path="/chat" element={<Chat />} />
-                  <Route path="/symptom-checker" element={<Diagnosis />} />
                   <Route path="/lab-reports" element={<LabReports />} />
                   <Route path="/medicine-info" element={<MedicineInfo />} />
                   <Route path="/interaction" element={<InteractionChecker />} />
@@ -101,9 +96,6 @@ export default function App() {
                   <Route path="/medical-profile" element={<MedicalProfile />} />
                   <Route path="/qr-scanner" element={<QRScanner />} />
                   <Route path="/qr-verification" element={<QRVerify />} />
-                  <Route path="/rx-scanner" element={<RxScanner />} />
-                  <Route path="/skin-analyzer" element={<SkinAnalyzer />} />
-                  <Route path="/mental-health" element={<MentalHealth />} />
                   <Route path="/history" element={<History />} />
                   <Route path="/medical-history" element={<MedicalHistory />} />
                   <Route path="/medical-history-timeline" element={<MedicalHistoryTimeline />} />

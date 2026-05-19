@@ -2,10 +2,8 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   MessageSquare, 
-  Stethoscope, 
   FileText, 
   Pill, 
-  Utensils, 
   Bell, 
   QrCode, 
   Camera,
@@ -18,8 +16,6 @@ import {
   Zap,
   Book,
   AlertTriangle,
-  ShieldAlert,
-  Brain,
   Settings as SettingsIcon,
   Moon,
   Sun,
@@ -41,7 +37,6 @@ const navGroups = [
     title: 'Core Features',
     items: [
       { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-      { name: 'Rx Scanner Pro', path: '/rx-scanner', icon: Camera },
       { name: 'AI Health Chat', path: '/chat', icon: MessageSquare },
     ]
   },
@@ -50,7 +45,6 @@ const navGroups = [
     items: [
       { name: 'Drug Intelligence', path: '/medicine-info', icon: Pill },
       { name: 'Interaction Check', path: '/interaction', icon: AlertTriangle },
-      { name: 'Symptom Analysis', path: '/symptom-checker', icon: Stethoscope },
       { name: 'Lab AI Analysis', path: '/lab-reports', icon: FileText },
     ]
   },
@@ -58,7 +52,6 @@ const navGroups = [
     title: 'Safety & Tools',
     items: [
       { name: 'QR Verification', path: '/qr-verification', icon: QrCode },
-      { name: 'Skin AI Analyzer', path: '/skin-analyzer', icon: ShieldAlert },
       { name: 'Side Effects AI', path: '/side-effects', icon: Zap },
       { name: 'IP Database', path: '/ip-database', icon: Book },
     ]
@@ -68,7 +61,6 @@ const navGroups = [
     items: [
       { name: 'Med Reminders', path: '/reminders', icon: Bell },
       { name: 'Add Medication', path: '/medication-entry', icon: PlusCircle },
-      { name: 'Mental Wellness', path: '/mental-health', icon: Brain },
       { name: 'Health History', path: '/history', icon: HistoryIcon },
       { name: 'Patient Profile', path: '/patient-profile', icon: UserIcon },
       { name: 'Profile', path: '/profile', icon: UserIcon },
@@ -295,7 +287,6 @@ export default function Layout() {
         <nav className="lg:hidden h-20 bg-card/80 backdrop-blur-lg border-t border-border flex items-center justify-around px-2 flex-shrink-0 pb-4">
           {[
             { name: 'Home', path: '/', icon: LayoutDashboard },
-            { name: 'Scan', path: '/rx-scanner', icon: Camera },
             { name: 'Chat', path: '/chat', icon: MessageSquare },
             { name: 'Meds', path: '/medicine-info', icon: Pill },
             { name: 'Settings', path: '/settings', icon: SettingsIcon },
