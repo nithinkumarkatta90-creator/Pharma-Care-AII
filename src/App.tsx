@@ -80,10 +80,10 @@ export default function App() {
           <Router>
             <Suspense fallback={<SplashScreen />}>
               <Routes>
-                <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
-                <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/" />} />
+                <Route path="/login" element={<Navigate to="/" />} />
+                <Route path="/signup" element={<Navigate to="/" />} />
                 
-                <Route element={user ? <Layout /> : <Navigate to="/login" />}>
+                <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/patient-profile" element={<PatientProfile />} />
                   <Route path="/medication-entry" element={<MedicationEntry />} />
