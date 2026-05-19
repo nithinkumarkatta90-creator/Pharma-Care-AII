@@ -15,7 +15,8 @@ import {
   HelpCircle,
   Smartphone,
   Database,
-  Lock
+  Lock,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -29,6 +30,7 @@ import {
   SelectValue 
 } from '../components/ui/select';
 import { toast } from 'sonner';
+import { PageHeader } from '../components/PageHeader';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -150,10 +152,13 @@ export default function Settings() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 pb-24">
-      <div className="text-left">
-        <h2 className="text-3xl font-black text-foreground tracking-tight">Settings</h2>
-        <p className="text-muted-foreground mt-1 font-medium">Manage your preferences and account security.</p>
-      </div>
+      <PageHeader
+        icon={SettingsIcon}
+        title="Settings"
+        description="Manage your preferences and account security."
+        color="slate"
+        backTo="/"
+      />
 
       <div className="space-y-6">
         {settingsGroups.map((group) => (

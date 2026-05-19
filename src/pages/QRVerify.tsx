@@ -24,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../co
 import { Badge } from '../components/ui/badge';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
+import { PageHeader } from '../components/PageHeader';
 import {
   Dialog,
   DialogContent,
@@ -233,31 +234,16 @@ export default function QRVerify() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-blue-600 pt-12 pb-24 px-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-white blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-40 h-40 rounded-full bg-white blur-3xl"></div>
-        </div>
-        
-        <div className="relative z-10 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-          <h1 className="text-2xl font-bold text-white">Verify Medicine</h1>
-          <div className="w-10"></div>
-        </div>
-        
-        <p className="relative z-10 text-blue-100 mt-2 text-center">
-          Scan QR code to verify authenticity
-        </p>
-      </div>
+    <div className="max-w-4xl mx-auto space-y-8 pb-20">
+      <PageHeader
+        icon={QrCode}
+        title="QR Verification"
+        description="Scan medicine QR codes to verify authenticity and detect counterfeits."
+        color="indigo"
+        badge="Verify"
+      />
 
-      <div className="px-6 -mt-16 relative z-20">
+      <div className="relative z-20">
         <AnimatePresence mode="wait">
           {scanning ? (
             <motion.div

@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+import { PageHeader } from '../components/PageHeader';
 
 const MEDICINE_CATEGORIES = [
   "All",
@@ -95,27 +96,13 @@ export default function MedicineInfo() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Link 
-            to="/" 
-            className={cn(
-              "p-2 rounded-2xl bg-card shadow-sm border border-border hover:bg-muted transition-colors"
-            )}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h2 className="text-4xl font-black text-foreground tracking-tight flex items-center gap-3">
-              Drug Intelligence
-              <Badge className="bg-blue-500/10 text-blue-500 border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">
-                Pro Database
-              </Badge>
-            </h2>
-            <p className="text-muted-foreground font-medium mt-1">AI-powered pharmacology and drug interaction database.</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={Pill}
+        title="Drug Intelligence"
+        description="AI-powered pharmacology and drug interaction database."
+        color="blue"
+        badge="Pro Database"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sidebar: Categories */}

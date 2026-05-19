@@ -42,6 +42,7 @@ import { Separator } from "../components/ui/separator";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import localDb from '../data/ip-database.json';
+import { PageHeader } from '../components/PageHeader';
 
 interface IPRecord {
   name: string;
@@ -173,21 +174,13 @@ export default function IPDatabase() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 pb-20">
-      <div className="flex items-center gap-4">
-        <Link 
-          to="/" 
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "rounded-xl bg-white shadow-sm border border-slate-200"
-          )}
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">IP Database</h2>
-          <p className="text-slate-500 text-sm">Official drug standards and monographs.</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Book}
+        title="IP Database"
+        description="Official Indian Pharmacopoeia drug standards and monographs."
+        color="emerald"
+        badge="Pharmacopoeia"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Sidebar Filters & Recents */}

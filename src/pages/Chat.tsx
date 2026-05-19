@@ -33,6 +33,7 @@ import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
+import { PageHeader } from '../components/PageHeader';
 
 const QUICK_ACTIONS = [
   { label: "Check Symptoms", icon: Stethoscope, prompt: "I'm feeling unwell. Can you help me analyze my symptoms?" },
@@ -215,36 +216,24 @@ export default function Chat() {
 
   return (
     <div className="max-w-5xl mx-auto h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)] flex flex-col gap-2 relative">
-      <div className="flex items-center justify-between px-4 py-2 flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <Link 
-            to="/" 
-            className="p-2 rounded-xl bg-card border border-border hover:bg-muted transition-all active:scale-95"
+      <PageHeader
+        icon={MessageSquare}
+        title="AI Health Chat"
+        description="Your personal AI health assistant, available 24/7."
+        color="teal"
+        badge="Live"
+        actions={
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearHistory}
+            className="text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl font-semibold transition-colors"
           >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl md:text-2xl font-black text-foreground tracking-tight">
-                AI Health
-              </h2>
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Live</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={clearHistory} 
-          className="text-muted-foreground hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg font-bold transition-colors"
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Clear
-        </Button>
-      </div>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Clear
+          </Button>
+        }
+      />
 
       <div className="flex-1 flex flex-col overflow-hidden border border-border/50 shadow-2xl rounded-[2.5rem] bg-card/30 backdrop-blur-sm relative">
         <div className="flex-1 overflow-hidden flex flex-col">

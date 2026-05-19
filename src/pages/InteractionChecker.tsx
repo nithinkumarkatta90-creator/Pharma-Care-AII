@@ -14,6 +14,7 @@ import Markdown from 'react-markdown';
 import { toast } from 'sonner';
 
 import { MedicineAutocomplete } from '../components/MedicineAutocomplete';
+import { PageHeader } from '../components/PageHeader';
 
 export default function InteractionChecker() {
   const { user } = useAuth();
@@ -145,21 +146,13 @@ export default function InteractionChecker() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center gap-4">
-        <Link 
-          to="/" 
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "rounded-xl bg-white shadow-sm border border-slate-200"
-          )}
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900">Drug Interaction Checker</h2>
-          <p className="text-slate-500 text-sm">Identify potential risks when taking multiple medications.</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={AlertTriangle}
+        title="Interaction Checker"
+        description="Identify potential risks when taking multiple medications."
+        color="amber"
+        badge="Safety AI"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">

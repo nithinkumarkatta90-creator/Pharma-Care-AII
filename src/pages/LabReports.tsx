@@ -24,6 +24,7 @@ import {
 import Markdown from 'react-markdown';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
+import { PageHeader } from '../components/PageHeader';
 
 export default function LabReports() {
   const { user } = useAuth();
@@ -83,28 +84,13 @@ export default function LabReports() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-10 pb-24">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Link 
-            to="/" 
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "rounded-2xl bg-card shadow-sm border border-border"
-            )}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h2 className="text-4xl font-black text-foreground tracking-tight flex items-center gap-3">
-              Lab AI Analysis
-              <Badge className="bg-cyan-500/10 text-cyan-600 border-none font-black text-[10px] uppercase tracking-widest px-3 py-1">
-                Pro Analysis
-              </Badge>
-            </h2>
-            <p className="text-muted-foreground font-medium mt-1">AI-powered summary and interpretation of your medical reports.</p>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        icon={FileText}
+        title="Lab AI Analysis"
+        description="AI-powered summary and interpretation of your medical reports."
+        color="cyan"
+        badge="Pro Analysis"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-5 space-y-6">

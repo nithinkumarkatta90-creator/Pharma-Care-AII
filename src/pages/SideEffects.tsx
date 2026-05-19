@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
 
 import { MedicineAutocomplete } from '../components/MedicineAutocomplete';
+import { PageHeader } from '../components/PageHeader';
 
 export default function SideEffects() {
   const { user } = useAuth();
@@ -98,21 +99,13 @@ export default function SideEffects() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      <div className="flex items-center gap-4">
-        <Link 
-          to="/" 
-          className={cn(
-            buttonVariants({ variant: "ghost", size: "icon" }),
-            "rounded-xl bg-white shadow-sm border border-slate-200"
-          )}
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h2 className="text-3xl font-bold text-slate-900">Side Effects Predictor</h2>
-          <p className="text-slate-500 text-sm">AI-powered prediction of potential side effects based on your health profile.</p>
-        </div>
-      </div>
+      <PageHeader
+        icon={Zap}
+        title="Side Effects AI"
+        description="AI-powered prediction of potential side effects based on your health profile."
+        color="purple"
+        badge="AI Predictor"
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <motion.div 

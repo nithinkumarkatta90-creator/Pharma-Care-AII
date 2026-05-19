@@ -29,6 +29,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
 import { Badge } from '../components/ui/badge';
+import { PageHeader } from '../components/PageHeader';
 
 export default function History() {
   const { user } = useAuth();
@@ -277,36 +278,26 @@ export default function History() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-10 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Link 
-            to="/" 
-            className="p-2 rounded-2xl bg-card shadow-sm border border-border hover:bg-muted transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <h2 className="text-4xl font-black text-foreground tracking-tight">Health History</h2>
-            <p className="text-muted-foreground font-medium mt-1">Manage your medical records and AI analysis logs.</p>
+      <PageHeader
+        icon={HistoryIcon}
+        title="Health History"
+        description="Manage your medical records and AI analysis logs."
+        color="sky"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <input
+                type="text"
+                placeholder="Search history..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-4 py-2 bg-slate-800/60 border border-slate-700/60 rounded-xl text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-sky-500/50 transition-colors w-52"
+              />
+            </div>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-            <input 
-              type="text" 
-              placeholder="Search history..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-2 bg-card border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all w-64"
-            />
-          </div>
-          <div className="flex items-center gap-2 bg-card p-1 rounded-2xl border border-border">
-            <Button variant="ghost" size="sm" className="rounded-xl font-bold">Export PDF</Button>
-            <Button variant="ghost" size="sm" className="rounded-xl font-bold">Sync Cloud</Button>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       <Tabs defaultValue="rx" className="w-full">
         <ScrollArea className="w-full whitespace-nowrap pb-4">

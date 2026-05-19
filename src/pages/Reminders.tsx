@@ -32,6 +32,7 @@ import { Reminder } from '../types/reminder';
 import { toast } from 'sonner';
 import { Skeleton } from '../components/ui/skeleton';
 import { motion, AnimatePresence } from 'motion/react';
+import { PageHeader } from '../components/PageHeader';
 
 export default function Reminders() {
   const { user } = useAuth();
@@ -139,42 +140,30 @@ export default function Reminders() {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link 
-            to="/" 
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "icon" }),
-              "rounded-xl bg-white shadow-sm border border-slate-200"
-            )}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="p-3 bg-blue-600 rounded-2xl shadow-lg shadow-blue-200">
-            <Bell className="w-6 h-6 text-white" />
+      <PageHeader
+        icon={Bell}
+        title="Med Reminders"
+        description="Track your medications and stay on top of your health schedule."
+        color="rose"
+        actions={
+          <div className="flex gap-2">
+            <Link
+              to="/reminder-logs"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-slate-700 text-slate-300 hover:bg-slate-800 transition-all"
+            >
+              <History className="w-4 h-4" />
+              Logs
+            </Link>
+            <Link
+              to="/add-reminder"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-rose-500 hover:bg-rose-400 text-white shadow-lg shadow-rose-500/20 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Add Reminder
+            </Link>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Medicine Reminders</h1>
-            <p className="text-slate-500 text-sm">Track your medication and stay on top of your health.</p>
-          </div>
-        </div>
-        <div className="flex gap-3">
-          <Link 
-            to="/reminder-logs"
-            className={buttonVariants({ variant: "outline", className: "border-blue-200 text-blue-600 hover:bg-blue-50" })}
-          >
-            <History className="w-4 h-4 mr-2" />
-            View Logs
-          </Link>
-          <Link 
-            to="/add-reminder"
-            className={buttonVariants({ className: "bg-blue-600 hover:bg-blue-700 text-white" })}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Reminder
-          </Link>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
