@@ -12,16 +12,17 @@ import {
   TrendingUp,
   ArrowRight,
   Stethoscope,
-  Zap,
   Book,
   QrCode,
   FileText,
   AlertTriangle,
-  MessageSquare,
   ChevronRight,
   HeartPulse,
   Sparkles,
   Activity,
+  Leaf,
+  Syringe,
+  Utensils,
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
@@ -192,14 +193,14 @@ export default function Dashboard() {
   ], [healthScore, remindersCount, medicinesCount, recentHistory.length]);
 
   const quickActions = useMemo(() => [
-    { name: 'AI Health Chat', path: '/chat', icon: MessageSquare, color: 'text-teal-400', bg: 'bg-teal-500/10', border: 'border-teal-500/20 hover:border-teal-500/50', desc: 'Consult with AI' },
-    { name: 'Drug Intelligence', path: '/medicine-info', icon: Pill, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20 hover:border-blue-500/50', desc: 'Search medications' },
+    { name: 'Food Intelligence', path: '/nutraceuticals', icon: Leaf, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20 hover:border-emerald-500/50', desc: 'Nutraceuticals & nutrition' },
+    { name: 'Vaccine Guide', path: '/vaccine-guide', icon: Syringe, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20 hover:border-blue-500/50', desc: 'Immunization schedules' },
     { name: 'Lab AI Analysis', path: '/lab-reports', icon: FileText, color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20 hover:border-indigo-500/50', desc: 'Upload lab reports' },
     { name: 'QR Verification', path: '/qr-verification', icon: QrCode, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20 hover:border-cyan-500/50', desc: 'Verify authenticity' },
     { name: 'Interaction Check', path: '/interaction', icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20 hover:border-amber-500/50', desc: 'Check drug safety' },
-    { name: 'Side Effects AI', path: '/side-effects', icon: Zap, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20 hover:border-purple-500/50', desc: 'Learn about risks' },
     { name: 'IP Database', path: '/ip-database', icon: Book, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20 hover:border-emerald-500/50', desc: 'Pharmacopoeia data' },
     { name: 'Med Reminders', path: '/reminders', icon: Bell, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/20 hover:border-rose-500/50', desc: 'Dose schedule' },
+    { name: 'Diet Plans', path: '/diet-plans', icon: Utensils, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20 hover:border-purple-500/50', desc: 'Personalized nutrition' },
   ], []);
 
   if (isDark) {
@@ -220,10 +221,10 @@ export default function Dashboard() {
           </div>
           <div className="flex gap-2.5 flex-shrink-0">
             <Link
-              to="/chat"
+              to="/nutraceuticals"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-teal-500 hover:bg-teal-400 text-white shadow-lg shadow-teal-500/25 transition-all hover:scale-[1.02] active:scale-95"
             >
-              <MessageSquare className="w-4 h-4" /> AI Chat
+              <Leaf className="w-4 h-4" /> Nutrition
             </Link>
             <Link
               to="/reminders"
@@ -301,10 +302,10 @@ export default function Dashboard() {
                       )}
                       {aiInsights && (
                         <Link
-                          to="/chat"
+                          to="/nutraceuticals"
                           className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-teal-500 hover:bg-teal-400 text-white shadow-lg shadow-teal-500/20 transition-all"
                         >
-                          <MessageSquare className="w-3.5 h-3.5" /> Discuss with AI
+                          <Leaf className="w-3.5 h-3.5" /> Explore Nutrition
                         </Link>
                       )}
                     </div>
@@ -459,8 +460,8 @@ export default function Dashboard() {
                       <Activity className="w-5 h-5 text-slate-600" />
                     </div>
                     <p className="text-sm text-slate-500">No recent activity yet.</p>
-                    <Link to="/chat" className="mt-2 inline-block text-xs text-teal-400 hover:text-teal-300 font-medium">
-                      Start a consultation →
+                    <Link to="/nutraceuticals" className="mt-2 inline-block text-xs text-teal-400 hover:text-teal-300 font-medium">
+                      Explore Food Intelligence →
                     </Link>
                   </div>
                 )}
@@ -489,10 +490,10 @@ export default function Dashboard() {
         </div>
         <div className="flex gap-2.5 flex-shrink-0">
           <Link
-            to="/chat"
+            to="/nutraceuticals"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/25 transition-all"
           >
-            <MessageSquare className="w-4 h-4" /> AI Chat
+            <Leaf className="w-4 h-4" /> Nutrition
           </Link>
           <Link
             to="/reminders"
@@ -554,8 +555,8 @@ export default function Dashboard() {
                     </div>
                   )}
                   {aiInsights && (
-                    <Link to="/chat" className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-sm transition-all">
-                      <MessageSquare className="w-3.5 h-3.5" /> Discuss with AI
+                    <Link to="/nutraceuticals" className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-sm transition-all">
+                      <Leaf className="w-3.5 h-3.5" /> Explore Nutrition
                     </Link>
                   )}
                 </div>
@@ -671,8 +672,8 @@ export default function Dashboard() {
                     <Activity className="w-5 h-5 text-gray-300" />
                   </div>
                   <p className="text-sm text-gray-400">No recent activity yet.</p>
-                  <Link to="/chat" className="mt-2 inline-block text-xs text-teal-600 hover:text-teal-700 font-medium">
-                    Start a consultation →
+                  <Link to="/nutraceuticals" className="mt-2 inline-block text-xs text-teal-600 hover:text-teal-700 font-medium">
+                    Explore Food Intelligence →
                   </Link>
                 </div>
               )}

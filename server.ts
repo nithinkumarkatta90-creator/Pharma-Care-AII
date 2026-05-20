@@ -208,19 +208,54 @@ async function startServer() {
   });
 
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok" });
+    res.json({ status: "ok", version: "2.0", modules: ["nutraceuticals", "vaccines", "ip-database", "lab-reports"] });
   });
 
-  app.post("/api/chat", async (req, res) => {
+  // Food / Nutraceuticals API
+  app.get("/api/foods", (req, res) => {
+    const q = req.query.q?.toString().toLowerCase();
+    const cat = req.query.category?.toString();
+    // Frontend uses embedded data; this endpoint supports future DB migration
+    res.json({ message: "Food intelligence data served from embedded database", query: q, category: cat });
+  });
+
+  app.post("/api/food-analyze", async (req, res) => {
     try {
-      const { message } = req.body;
-      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-      const result = await model.generateContent(message);
-      const reply = result.response.text();
-      res.json({ reply });
+      const { condition, foods } = req.body;
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `You are a clinical nutritionist. A patient has the condition/goal: "${condition}".
+Based on these foods: ${JSON.stringify(foods)}, provide:
+1. Top 3 most beneficial foods for this condition with specific reasons
+2. Any foods to avoid
+3. A brief meal timing recommendation
+Keep response concise and evidence-based. Do not give personalized medical advice.`;
+      const result = await model.generateContent(prompt);
+      res.json({ analysis: result.response.text() });
     } catch (error) {
-      console.error("Gemini API Error:", error);
-      res.status(500).json({ error: "Gemini API Error" });
+      console.error("Food Analyze API Error:", error);
+      res.status(500).json({ error: "Failed to analyze food recommendations" });
+    }
+  });
+
+  // Vaccine Guide API
+  app.get("/api/vaccines", (req, res) => {
+    const q = req.query.q?.toString().toLowerCase();
+    const category = req.query.category?.toString();
+    res.json({ message: "Vaccine database served from embedded database", query: q, category });
+  });
+
+  app.post("/api/vaccine-info", async (req, res) => {
+    try {
+      const { vaccineName } = req.body;
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `Provide a brief, accurate clinical summary about the vaccine: "${vaccineName}".
+Include: mechanism of action, population impact, and any recent updates. 
+Max 150 words. Cite WHO or CDC guidelines. State this is informational, not medical advice.`;
+      const result = await model.generateContent(prompt);
+      res.json({ summary: result.response.text() });
+    } catch (error) {
+      console.error("Vaccine Info API Error:", error);
+      res.status(500).json({ error: "Failed to fetch vaccine information" });
     }
   });
 
