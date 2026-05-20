@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   FileText,
   Bell,
-  QrCode,
   History as HistoryIcon,
   User as UserIcon,
   LogOut,
@@ -20,7 +19,11 @@ import {
   ChevronRight,
   Leaf,
   Syringe,
-  Utensils,
+  FileHeart,
+  ClipboardList,
+  CalendarCheck,
+  FlaskConical,
+  AlertOctagon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { auth, db } from '../lib/firebase';
@@ -40,30 +43,27 @@ const navGroups = [
     ],
   },
   {
-    title: 'Intelligence',
+    title: 'Personal Records',
     items: [
-      { name: 'Lab AI Analysis', path: '/lab-reports', icon: FileText },
-      { name: 'Interaction Check', path: '/interaction', icon: AlertTriangle },
-      { name: 'IP Database', path: '/ip-database', icon: Book },
+      { name: 'Health Records', path: '/health-records', icon: FileHeart },
+      { name: 'Prescriptions', path: '/prescriptions', icon: ClipboardList },
+      { name: 'Vaccination Records', path: '/vaccination-records', icon: CalendarCheck },
+    ],
+  },
+  {
+    title: 'Clinical Reference',
+    items: [
+      { name: 'Drug Database', path: '/ip-database', icon: Book },
+      { name: 'Drug Interactions', path: '/interaction', icon: AlertTriangle },
+      { name: 'Lab Reference', path: '/lab-reference', icon: FlaskConical },
+      { name: 'Drug Recall Alerts', path: '/drug-recalls', icon: AlertOctagon },
     ],
   },
   {
     title: 'Health & Nutrition',
     items: [
-      { name: 'Food Intelligence', path: '/nutraceuticals', icon: Leaf },
-      { name: 'Diet Plans', path: '/diet-plans', icon: Utensils },
-    ],
-  },
-  {
-    title: 'Immunization',
-    items: [
+      { name: 'Food & Nutraceuticals', path: '/nutraceuticals', icon: Leaf },
       { name: 'Vaccine Guide', path: '/vaccine-guide', icon: Syringe },
-    ],
-  },
-  {
-    title: 'Safety & Tools',
-    items: [
-      { name: 'QR Verification', path: '/qr-verification', icon: QrCode },
     ],
   },
   {
@@ -72,6 +72,7 @@ const navGroups = [
       { name: 'Med Reminders', path: '/reminders', icon: Bell },
       { name: 'Add Medication', path: '/medication-entry', icon: PlusCircle },
       { name: 'Health History', path: '/history', icon: HistoryIcon },
+      { name: 'Lab Reports', path: '/lab-reports', icon: FileText },
       { name: 'Patient Profile', path: '/patient-profile', icon: UserIcon },
       { name: 'Settings', path: '/settings', icon: SettingsIcon },
     ],
@@ -139,14 +140,9 @@ export default function Layout() {
           <div className={`p-1.5 rounded-lg ${isDark ? 'bg-teal-500/15' : 'bg-teal-50'}`}>
             <Shield className={`h-5 w-5 ${isDark ? 'text-teal-400' : 'text-teal-600'}`} />
           </div>
-          <div>
-            <span className={`font-bold text-base tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Pharma<span className={isDark ? 'text-teal-400' : 'text-teal-600'}>Care</span>
-            </span>
-            <span className={`ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md align-middle ${isDark ? 'bg-teal-500/15 text-teal-400' : 'bg-teal-50 text-teal-600'}`}>
-              AI
-            </span>
-          </div>
+          <span className={`font-bold text-base tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Pharma<span className={isDark ? 'text-teal-400' : 'text-teal-600'}>Care</span>
+          </span>
         </div>
       </div>
 
@@ -198,7 +194,7 @@ export default function Layout() {
     </div>
   );
 
-  const currentPageName = navGroups.flatMap((g) => g.items).find((i) => i.path === location.pathname)?.name || 'PharmaCare AI';
+  const currentPageName = navGroups.flatMap((g) => g.items).find((i) => i.path === location.pathname)?.name || 'PharmaCare';
 
   return (
     <div className={`flex h-screen overflow-hidden transition-colors ${isDark ? 'bg-[#0B1120] text-slate-100' : 'bg-gray-50 text-gray-900'}`}>
@@ -235,13 +231,13 @@ export default function Layout() {
               <Search className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
               <input
                 type="text"
-                placeholder="Search foods, vaccines, medications..."
+                placeholder="Search drugs, vaccines, lab tests..."
                 className="bg-transparent border-none outline-none w-full text-sm placeholder:text-slate-500"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     const q = (e.target as HTMLInputElement).value;
                     if (q.trim()) {
-                      navigate(`/nutraceuticals?q=${encodeURIComponent(q)}`);
+                      navigate(`/ip-database?q=${encodeURIComponent(q)}`);
                       (e.target as HTMLInputElement).value = '';
                     }
                   }
@@ -292,8 +288,8 @@ export default function Layout() {
         <nav className={`lg:hidden h-16 border-t flex items-center justify-around px-2 flex-shrink-0 backdrop-blur-md transition-colors ${isDark ? 'bg-[#0F172A]/90 border-slate-800/60' : 'bg-white/90 border-gray-200'}`}>
           {[
             { name: 'Home', path: '/', icon: LayoutDashboard },
-            { name: 'Nutrition', path: '/nutraceuticals', icon: Leaf },
-            { name: 'Vaccines', path: '/vaccine-guide', icon: Syringe },
+            { name: 'Records', path: '/health-records', icon: FileHeart },
+            { name: 'Reference', path: '/ip-database', icon: Book },
             { name: 'Settings', path: '/settings', icon: SettingsIcon },
           ].map((item) => {
             const isActive = location.pathname === item.path;

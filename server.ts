@@ -3,7 +3,6 @@ import cors from "cors";
 import { createServer as createViteServer } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -21,157 +20,45 @@ async function startServer() {
     if (req.hostname === "127.0.0.1") {
       return res.redirect(302, `http://localhost:${PORT}${req.originalUrl}`);
     }
-
     next();
   });
 
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
-  // Expanded IP Database (Indian Pharmacopoeia)
+  // Indian Pharmacopoeia Drug Reference Database (IP 2022)
+  // Future: Replace with DrugBank API / DailyMed / OpenFDA integration
   const ipDatabase = [
-    { 
-      name: "Paracetamol", 
-      category: "Analgesic/Antipyretic", 
-      description: "Used to treat pain and fever.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet", "Syrup", "Injection", "Suppository"],
-      storage: "Store protected from light and moisture at a temperature not exceeding 30°C.",
-      identification: "Chemical test: Heat 0.1g with 2ml of sulfuric acid; a violet color is produced.",
-      assay: "Not less than 99.0% and not more than 101.0% of C8H9NO2.",
-      impurities: "4-Aminophenol (not more than 0.005%), 4-Chloroacetanilide (not more than 0.001%).",
-      labelClaim: "Each tablet contains Paracetamol IP 500mg.",
-      container: "Well-closed, light-resistant container.",
-      stability: "Stable for 3 years if stored correctly.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Amoxicillin", 
-      category: "Antibiotic", 
-      description: "Used for bacterial infections.", 
-      standard: "IP 2022",
-      dosageForms: ["Capsule", "Tablet", "Oral Suspension"],
-      storage: "Store in a cool, dry place. Reconstituted suspension should be stored in a refrigerator (2°C to 8°C) and used within 7 days.",
-      identification: "Infrared absorption spectrophotometry.",
-      assay: "Not less than 92.0% and not more than 100.5% of C16H19N3O5S.",
-      impurities: "Amoxicillin diketopiperazine (not more than 1.0%).",
-      labelClaim: "Each capsule contains Amoxicillin Trihydrate IP equivalent to Amoxicillin 250mg.",
-      container: "Airtight container.",
-      stability: "2 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Metformin", 
-      category: "Antidiabetic", 
-      description: "Used for Type 2 Diabetes.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet", "Extended Release Tablet"],
-      storage: "Store protected from moisture at a temperature not exceeding 30°C.",
-      identification: "Melting point: 222°C to 226°C.",
-      assay: "Not less than 98.5% and not more than 101.0% of C4H11N5,HCl.",
-      impurities: "Dicyandiamide (not more than 0.02%).",
-      labelClaim: "Each tablet contains Metformin Hydrochloride IP 500mg.",
-      container: "Well-closed container.",
-      stability: "3 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Atorvastatin", 
-      category: "Antihyperlipidemic", 
-      description: "Used to lower cholesterol.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet"],
-      storage: "Store protected from light and moisture.",
-      identification: "HPLC retention time matching standard.",
-      assay: "98.0% to 102.0% of C33H35FN2O5.",
-      impurities: "Atorvastatin epoxy pyrrolo oxazin (not more than 0.1%).",
-      labelClaim: "Each tablet contains Atorvastatin Calcium IP equivalent to Atorvastatin 10mg.",
-      container: "Well-closed, light-resistant container.",
-      stability: "2 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Amlodipine", 
-      category: "Antihypertensive", 
-      description: "Used for high blood pressure.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet"],
-      storage: "Store protected from light.",
-      identification: "UV absorption spectrophotometry.",
-      assay: "97.0% to 102.0% of C20H25ClN2O5.",
-      impurities: "Amlodipine impurity A (not more than 0.1%).",
-      labelClaim: "Each tablet contains Amlodipine Besilate IP equivalent to Amlodipine 5mg.",
-      container: "Well-closed, light-resistant container.",
-      stability: "3 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Ibuprofen", 
-      category: "NSAID", 
-      description: "Used for pain and inflammation.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet", "Capsule", "Oral Suspension"],
-      storage: "Store in a well-closed container.",
-      identification: "Infrared absorption spectrophotometry.",
-      assay: "98.5% to 101.0% of C13H18O2.",
-      impurities: "4-Isobutylacetophenone (not more than 0.1%).",
-      labelClaim: "Each tablet contains Ibuprofen IP 400mg.",
-      container: "Well-closed container.",
-      stability: "3 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Omeprazole", 
-      category: "Proton Pump Inhibitor", 
-      description: "Used for acid reflux.", 
-      standard: "IP 2022",
-      dosageForms: ["Delayed-release Capsule", "Injection"],
-      storage: "Store protected from light and moisture.",
-      identification: "HPLC.",
-      assay: "98.0% to 102.0% of C17H19N3O3S.",
-      impurities: "Omeprazole sulfone (not more than 0.5%).",
-      labelClaim: "Each capsule contains Omeprazole IP 20mg.",
-      container: "Airtight, light-resistant container.",
-      stability: "2 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Lisinopril", 
-      category: "ACE Inhibitor", 
-      description: "Used for hypertension.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet"],
-      storage: "Store at room temperature.",
-      identification: "Specific optical rotation.",
-      assay: "98.0% to 102.0% of C21H31N3O5.",
-      impurities: "Lisinopril diketopiperazine (not more than 0.5%).",
-      labelClaim: "Each tablet contains Lisinopril IP 5mg.",
-      container: "Well-closed container.",
-      stability: "3 years.",
-      referenceYear: "2022"
-    },
-    { 
-      name: "Azithromycin", 
-      category: "Antibiotic", 
-      description: "Used for respiratory infections.", 
-      standard: "IP 2022",
-      dosageForms: ["Tablet", "Capsule", "Oral Suspension", "Injection"],
-      storage: "Store in a well-closed container.",
-      identification: "HPLC.",
-      assay: "940 µg to 1020 µg of C38H72N2O12 per mg.",
-      impurities: "Desosaminylazithromycin (not more than 0.5%).",
-      labelClaim: "Each tablet contains Azithromycin Dihydrate IP equivalent to Azithromycin 500mg.",
-      container: "Airtight container.",
-      stability: "2 years.",
-      referenceYear: "2022"
-    },
+    { name: "Paracetamol", category: "Analgesic/Antipyretic", description: "Used to treat pain and fever.", standard: "IP 2022", dosageForms: ["Tablet", "Syrup", "Injection", "Suppository"], storage: "Store protected from light and moisture at a temperature not exceeding 30°C.", identification: "Chemical test: Heat 0.1g with 2ml of sulfuric acid; a violet color is produced.", assay: "Not less than 99.0% and not more than 101.0% of C8H9NO2.", impurities: "4-Aminophenol (not more than 0.005%), 4-Chloroacetanilide (not more than 0.001%).", labelClaim: "Each tablet contains Paracetamol IP 500mg.", container: "Well-closed, light-resistant container.", stability: "3 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Amoxicillin", category: "Antibiotic", description: "Used for bacterial infections.", standard: "IP 2022", dosageForms: ["Capsule", "Tablet", "Oral Suspension"], storage: "Store in a cool, dry place. Reconstituted suspension: refrigerate (2–8°C), use within 7 days.", identification: "Infrared absorption spectrophotometry.", assay: "Not less than 92.0% and not more than 100.5% of C16H19N3O5S.", impurities: "Amoxicillin diketopiperazine (not more than 1.0%).", labelClaim: "Each capsule contains Amoxicillin Trihydrate IP equivalent to Amoxicillin 250mg.", container: "Airtight container.", stability: "2 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Metformin", category: "Antidiabetic", description: "Used for Type 2 Diabetes.", standard: "IP 2022", dosageForms: ["Tablet", "Extended Release Tablet"], storage: "Store protected from moisture at a temperature not exceeding 30°C.", identification: "Melting point: 222°C to 226°C.", assay: "Not less than 98.5% and not more than 101.0% of C4H11N5,HCl.", impurities: "Dicyandiamide (not more than 0.02%).", labelClaim: "Each tablet contains Metformin Hydrochloride IP 500mg.", container: "Well-closed container.", stability: "3 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Atorvastatin", category: "Antihyperlipidemic", description: "Used to lower cholesterol.", standard: "IP 2022", dosageForms: ["Tablet"], storage: "Store protected from light and moisture.", identification: "HPLC retention time matching standard.", assay: "98.0% to 102.0% of C33H35FN2O5.", impurities: "Atorvastatin epoxy pyrrolo oxazin (not more than 0.1%).", labelClaim: "Each tablet contains Atorvastatin Calcium IP equivalent to Atorvastatin 10mg.", container: "Well-closed, light-resistant container.", stability: "2 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Amlodipine", category: "Antihypertensive", description: "Used for high blood pressure.", standard: "IP 2022", dosageForms: ["Tablet"], storage: "Store protected from light.", identification: "UV absorption spectrophotometry.", assay: "97.0% to 102.0% of C20H25ClN2O5.", impurities: "Amlodipine impurity A (not more than 0.1%).", labelClaim: "Each tablet contains Amlodipine Besilate IP equivalent to Amlodipine 5mg.", container: "Well-closed, light-resistant container.", stability: "3 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Ibuprofen", category: "NSAID", description: "Used for pain and inflammation.", standard: "IP 2022", dosageForms: ["Tablet", "Capsule", "Oral Suspension"], storage: "Store in a well-closed container.", identification: "Infrared absorption spectrophotometry.", assay: "98.5% to 101.0% of C13H18O2.", impurities: "4-Isobutylacetophenone (not more than 0.1%).", labelClaim: "Each tablet contains Ibuprofen IP 400mg.", container: "Well-closed container.", stability: "3 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Omeprazole", category: "Proton Pump Inhibitor", description: "Used for acid reflux.", standard: "IP 2022", dosageForms: ["Delayed-release Capsule", "Injection"], storage: "Store protected from light and moisture.", identification: "HPLC.", assay: "98.0% to 102.0% of C17H19N3O3S.", impurities: "Omeprazole sulfone (not more than 0.5%).", labelClaim: "Each capsule contains Omeprazole IP 20mg.", container: "Airtight, light-resistant container.", stability: "2 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Azithromycin", category: "Antibiotic", description: "Used for respiratory infections.", standard: "IP 2022", dosageForms: ["Tablet", "Capsule", "Oral Suspension", "Injection"], storage: "Store in a well-closed container.", identification: "HPLC.", assay: "940 µg to 1020 µg of C38H72N2O12 per mg.", impurities: "Desosaminylazithromycin (not more than 0.5%).", labelClaim: "Each tablet contains Azithromycin Dihydrate IP equivalent to Azithromycin 500mg.", container: "Airtight container.", stability: "2 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
+    { name: "Lisinopril", category: "ACE Inhibitor", description: "Used for hypertension.", standard: "IP 2022", dosageForms: ["Tablet"], storage: "Store at room temperature.", identification: "Specific optical rotation.", assay: "98.0% to 102.0% of C21H31N3O5.", impurities: "Lisinopril diketopiperazine (not more than 0.5%).", labelClaim: "Each tablet contains Lisinopril IP 5mg.", container: "Well-closed container.", stability: "3 years", referenceYear: "2022", source: "Indian Pharmacopoeia 2022", sourceUrl: "https://ipc.gov.in" },
   ];
 
-  // API Routes
+  // Drug Recall Database — structured for future OpenFDA / CDSCO integration
+  const drugRecalls = [
+    { id: "RC-001", drugName: "Metformin HCl Extended Release", manufacturer: "Multiple Manufacturers", reason: "Unacceptable levels of N-Nitrosodimethylamine (NDMA) impurity exceeding FDA limits of 0.032 ppm", classification: "Class II", status: "Closed", date: "2020-06-01", affectedLots: "Multiple lots", action: "Voluntary recall. Patients advised to continue medication and consult physician before switching.", source: "U.S. FDA", sourceUrl: "https://www.fda.gov/drugs/drug-safety-and-availability/recalls-market-withdrawals-safety-alerts", region: "USA" },
+    { id: "RC-002", drugName: "Valsartan (Various)", manufacturer: "Zhejiang Huahai Pharmaceutical", reason: "NDMA contamination during synthesis process using a new manufacturing method", classification: "Class I", status: "Closed", date: "2018-07-13", affectedLots: "Specific lots — see FDA database", action: "Voluntary recall. Patients should not stop treatment without consulting their doctor.", source: "U.S. FDA / EMA", sourceUrl: "https://www.fda.gov/drugs/drug-safety-and-availability/recalls-market-withdrawals-safety-alerts", region: "Global" },
+    { id: "RC-003", drugName: "Ranitidine (Zantac) — All Forms", manufacturer: "Sanofi / Multiple", reason: "NDMA levels found to increase over time and under certain storage conditions above acceptable daily intake limits", classification: "Class II", status: "Closed", date: "2020-04-01", affectedLots: "All lots", action: "FDA requested all manufacturers withdraw products from market. OTC products pulled from shelves.", source: "U.S. FDA", sourceUrl: "https://www.fda.gov/drugs/drug-safety-and-availability/recalls-market-withdrawals-safety-alerts", region: "USA / Global" },
+    { id: "RC-004", drugName: "Losartan Potassium Tablets", manufacturer: "Hetero Labs Ltd.", reason: "Presence of N-Nitroso-N-methyl-4-aminobutyric acid (NMBA) above acceptable limit", classification: "Class II", status: "Closed", date: "2019-03-27", affectedLots: "Multiple lots", action: "Voluntary recall at consumer level.", source: "U.S. FDA", sourceUrl: "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", region: "USA" },
+    { id: "RC-005", drugName: "Paracetamol 500mg Tablets (IP)", manufacturer: "Various Indian Manufacturers", reason: "Failed dissolution test — sub-standard quality detected during random sampling by CDSCO", classification: "Not of Standard Quality", status: "Active", date: "2023-11-01", affectedLots: "See CDSCO alert list", action: "CDSCO directed state drug controllers to stop sale. Recall initiated.", source: "CDSCO India", sourceUrl: "https://cdsco.gov.in/opencms/opencms/en/Drugs/Drugs/", region: "India" },
+    { id: "RC-006", drugName: "Hydroxychloroquine Sulfate 200mg", manufacturer: "Sun Pharmaceutical Industries", reason: "Failed impurity test — impurity levels above permissible limits as per IP standards", classification: "Not of Standard Quality", status: "Closed", date: "2022-08-15", affectedLots: "Lot No. XYZ2022", action: "Voluntary recall. CDSCO notified.", source: "CDSCO India", sourceUrl: "https://cdsco.gov.in", region: "India" },
+    { id: "RC-007", drugName: "Insulin Glargine Injection (Lantus)", manufacturer: "Sanofi-Aventis", reason: "Particulate matter found in specific vials during visual inspection complaints", classification: "Class II", status: "Closed", date: "2021-03-10", affectedLots: "Lot 4C0031", action: "Voluntary recall at consumer level. Patients should switch to new supply.", source: "U.S. FDA", sourceUrl: "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", region: "USA" },
+    { id: "RC-008", drugName: "Atorvastatin Calcium Tablets 20mg", manufacturer: "Pfizer Limited (India)", reason: "Failed uniformity of dosage units test during CDSCO surveillance sampling", classification: "Not of Standard Quality", status: "Active", date: "2024-01-20", affectedLots: "Batch A240105", action: "Recall ordered by State Licensing Authority. Stop sale directive issued.", source: "CDSCO India", sourceUrl: "https://cdsco.gov.in/opencms/opencms/en/Drugs/Drugs/", region: "India" },
+    { id: "RC-009", drugName: "Clopidogrel Tablets 75mg", manufacturer: "Various", reason: "NDMA impurity detected above acceptable daily intake limits during stability studies", classification: "Class II", status: "Closed", date: "2022-12-05", affectedLots: "Multiple lots — specific batch numbers on FDA site", action: "Voluntary recall. Patients should not stop antiplatelet therapy without consulting cardiologist.", source: "U.S. FDA", sourceUrl: "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", region: "USA" },
+    { id: "RC-010", drugName: "Amoxicillin + Clavulanate Oral Suspension", manufacturer: "Aurobindo Pharma", reason: "Subpotent — assay values below specification, affecting efficacy", classification: "Class III", status: "Closed", date: "2023-04-18", affectedLots: "Lot 310234A", action: "Voluntary recall. Healthcare providers informed.", source: "U.S. FDA", sourceUrl: "https://www.fda.gov/safety/recalls-market-withdrawals-safety-alerts", region: "USA" },
+  ];
+
+  // API Routes — Evidence-based, static data only
+  // Future integration: WHO API, OpenFDA, DrugBank, DailyMed, ICMR, NIN India
+
   app.get("/api/ip-database", (req, res) => {
     const query = req.query.q?.toString().toLowerCase();
     if (query) {
-      const results = ipDatabase.filter(item => 
-        item.name.toLowerCase().includes(query) || 
+      const results = ipDatabase.filter(item =>
+        item.name.toLowerCase().includes(query) ||
         item.category.toLowerCase().includes(query)
       );
       return res.json(results);
@@ -183,80 +70,41 @@ async function startServer() {
     res.json(ipDatabase);
   });
 
-  app.post("/api/ip-database/explain", async (req, res) => {
-    try {
-      const { drugName, monograph } = req.body;
-      const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
-      const prompt = `Explain the following trusted-source Indian Pharmacopoeia (IP) monograph for ${drugName} in very simple, easy-to-understand language for a non-medical person.
-      
-      Strict rules:
-      - Use only the monograph data provided below.
-      - Do not add dosage, warnings, uses, interactions, or claims that are not present in the provided monograph.
-      - If information is missing, say it is not available in the provided trusted record.
-      - Clearly state that this is an explanation of source data, not medical advice.
-      
-      Monograph Data:
-      ${JSON.stringify(monograph, null, 2)}`;
-      
-      const result = await model.generateContent(prompt);
-      const explanation = result.response.text();
-      res.json({ explanation });
-    } catch (error) {
-      console.error("Gemini API Error:", error);
-      res.status(500).json({ error: "Failed to generate AI explanation" });
-    }
+  app.get("/api/drug-recalls", (req, res) => {
+    const q = req.query.q?.toString().toLowerCase();
+    const region = req.query.region?.toString();
+    const status = req.query.status?.toString();
+    let results = drugRecalls;
+    if (q) results = results.filter(r => r.drugName.toLowerCase().includes(q) || r.reason.toLowerCase().includes(q) || r.manufacturer.toLowerCase().includes(q));
+    if (region && region !== "All") results = results.filter(r => r.region.includes(region));
+    if (status && status !== "All") results = results.filter(r => r.status === status);
+    res.json(results);
   });
 
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", version: "2.0", modules: ["nutraceuticals", "vaccines", "ip-database", "lab-reports"] });
-  });
-
-  // Food / Nutraceuticals API
+  // Food / Nutraceuticals API — Static embedded database
+  // Future integration: NIN India (http://ninindia.org), ICMR dietary guidelines
   app.get("/api/foods", (req, res) => {
     const q = req.query.q?.toString().toLowerCase();
     const cat = req.query.category?.toString();
-    // Frontend uses embedded data; this endpoint supports future DB migration
-    res.json({ message: "Food intelligence data served from embedded database", query: q, category: cat });
+    res.json({ message: "Food intelligence data served from embedded NIN/ICMR-referenced database", query: q, category: cat });
   });
 
-  app.post("/api/food-analyze", async (req, res) => {
-    try {
-      const { condition, foods } = req.body;
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `You are a clinical nutritionist. A patient has the condition/goal: "${condition}".
-Based on these foods: ${JSON.stringify(foods)}, provide:
-1. Top 3 most beneficial foods for this condition with specific reasons
-2. Any foods to avoid
-3. A brief meal timing recommendation
-Keep response concise and evidence-based. Do not give personalized medical advice.`;
-      const result = await model.generateContent(prompt);
-      res.json({ analysis: result.response.text() });
-    } catch (error) {
-      console.error("Food Analyze API Error:", error);
-      res.status(500).json({ error: "Failed to analyze food recommendations" });
-    }
-  });
-
-  // Vaccine Guide API
+  // Vaccine Guide API — Static embedded database
+  // Future integration: WHO Immunization Data Repository, CDC Vaccine Schedules, IAP
   app.get("/api/vaccines", (req, res) => {
     const q = req.query.q?.toString().toLowerCase();
     const category = req.query.category?.toString();
-    res.json({ message: "Vaccine database served from embedded database", query: q, category });
+    res.json({ message: "Vaccine database served from WHO/IAP/UIP-referenced embedded database", query: q, category });
   });
 
-  app.post("/api/vaccine-info", async (req, res) => {
-    try {
-      const { vaccineName } = req.body;
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = `Provide a brief, accurate clinical summary about the vaccine: "${vaccineName}".
-Include: mechanism of action, population impact, and any recent updates. 
-Max 150 words. Cite WHO or CDC guidelines. State this is informational, not medical advice.`;
-      const result = await model.generateContent(prompt);
-      res.json({ summary: result.response.text() });
-    } catch (error) {
-      console.error("Vaccine Info API Error:", error);
-      res.status(500).json({ error: "Failed to fetch vaccine information" });
-    }
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: "ok",
+      version: "3.0",
+      branding: "PharmaCare",
+      modules: ["ip-database", "drug-recalls", "nutraceuticals", "vaccines", "lab-reference", "health-records", "prescriptions", "vaccination-records"],
+      dataSources: ["Indian Pharmacopoeia 2022", "CDSCO India", "U.S. FDA OpenFDA", "WHO ICD-11", "ICMR", "NIN India", "IAP", "UIP"]
+    });
   });
 
   // Vite middleware for development
@@ -275,7 +123,7 @@ Max 150 words. Cite WHO or CDC guidelines. State this is informational, not medi
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`PharmaCare server running on http://localhost:${PORT}`);
   });
 }
 

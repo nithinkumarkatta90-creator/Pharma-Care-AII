@@ -11,7 +11,6 @@ import {
   Info, 
   FileText, 
   Download, 
-  Sparkles, 
   Bookmark, 
   BookmarkCheck, 
   History, 
@@ -76,8 +75,6 @@ export default function IPDatabase() {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedDrug, setSelectedDrug] = useState<IPRecord | null>(null);
-  const [aiExplanation, setAiExplanation] = useState<string | null>(null);
-  const [explaining, setExplaining] = useState(false);
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [recentViews, setRecentViews] = useState<IPRecord[]>([]);
 
@@ -119,24 +116,6 @@ export default function IPDatabase() {
     const newRecents = [drug, ...filtered].slice(0, 5);
     setRecentViews(newRecents);
     localStorage.setItem('ip_recents', JSON.stringify(newRecents));
-  };
-
-  const handleExplain = async (drug: IPRecord) => {
-    setExplaining(true);
-    setAiExplanation(null);
-    try {
-      const response = await fetch('/api/ip-database/explain', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ drugName: drug.name, monograph: drug })
-      });
-      const data = await response.json();
-      setAiExplanation(data.explanation);
-    } catch (error) {
-      toast.error('Failed to generate AI explanation');
-    } finally {
-      setExplaining(false);
-    }
   };
 
   const exportToPDF = (drug: IPRecord) => {
@@ -347,26 +326,16 @@ export default function IPDatabase() {
                                       <Download className="w-4 h-4 mr-2" />
                                       Export PDF
                                     </Button>
-                                    <Button 
-                                      className="bg-blue-600 hover:bg-blue-700" 
-                                      size="sm"
-                                      disabled={explaining}
-                                      onClick={() => handleExplain(selectedDrug)}
-                                    >
-                                      {explaining ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                                      AI Explanation
-                                    </Button>
                                   </div>
                                 </div>
                               </DialogHeader>
                               
                               <ScrollArea className="flex-1 p-6">
                                 <Tabs defaultValue="general" className="w-full">
-                                  <TabsList className="grid w-full grid-cols-4 mb-8">
+                                  <TabsList className="grid w-full grid-cols-3 mb-8">
                                     <TabsTrigger value="general">General</TabsTrigger>
                                     <TabsTrigger value="tests">Tests & Assay</TabsTrigger>
                                     <TabsTrigger value="storage">Storage & Stability</TabsTrigger>
-                                    <TabsTrigger value="ai">AI Insight</TabsTrigger>
                                   </TabsList>
                                   
                                   <TabsContent value="general" className="space-y-6">
@@ -463,41 +432,6 @@ export default function IPDatabase() {
                                     </div>
                                   </TabsContent>
 
-                                  <TabsContent value="ai" className="space-y-6">
-                                    {!aiExplanation ? (
-                                      <div className="text-center py-12 space-y-4">
-                                        <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto">
-                                          <Sparkles className="w-8 h-8 text-blue-600" />
-                                        </div>
-                                        <div className="space-y-2">
-                                          <h4 className="text-lg font-bold text-slate-900">AI Monograph Explainer</h4>
-                                          <p className="text-sm text-slate-500 max-w-md mx-auto">
-                                            Let Gemini explain only the selected trusted monograph data in simple, everyday language.
-                                          </p>
-                                        </div>
-                                        <Button 
-                                          className="bg-blue-600 hover:bg-blue-700" 
-                                          disabled={explaining}
-                                          onClick={() => handleExplain(selectedDrug)}
-                                        >
-                                          {explaining ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                                          Generate Explanation
-                                        </Button>
-                                      </div>
-                                    ) : (
-                                      <div className="p-6 bg-blue-50 rounded-2xl border border-blue-100 relative">
-                                        <div className="absolute -top-3 left-6 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold rounded-full flex items-center gap-1">
-                                          <Sparkles className="w-3 h-3" />
-                                          SOURCE EXPLANATION
-                                        </div>
-                                        <div className="prose prose-sm max-w-none text-blue-900 leading-relaxed">
-                                          {aiExplanation.split('\n').map((line, i) => (
-                                            <p key={i} className="mb-2">{line}</p>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-                                  </TabsContent>
                                 </Tabs>
                               </ScrollArea>
                             </DialogContent>

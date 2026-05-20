@@ -43,7 +43,6 @@ import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 import { auth } from '../lib/firebase';
 import { medicalHistoryService } from '../services/medicalHistoryService';
-import { aiService } from '../services/aiService';
 import { PatientMedicalHistory, MedicalDocument } from '../types/medical-history';
 import {
   Dialog,
@@ -64,9 +63,6 @@ export default function MedicalHistory() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<PatientMedicalHistory | null>(null);
-  const [aiSummary, setAiSummary] = useState<string | null>(null);
-  const [aiRisks, setAiRisks] = useState<string | null>(null);
-  const [analyzing, setAnalyzing] = useState(false);
 
   const [formData, setFormData] = useState<Partial<PatientMedicalHistory>>({
     patientName: '',
@@ -248,32 +244,6 @@ export default function MedicalHistory() {
       documents: []
     });
     setSelectedRecord(null);
-    setAiSummary(null);
-    setAiRisks(null);
-  };
-
-  const handleAISummary = async (record: PatientMedicalHistory) => {
-    setAnalyzing(true);
-    try {
-      const summary = await aiService.summarizeMedicalHistory(record);
-      setAiSummary(summary);
-    } catch (error) {
-      toast.error('AI Summary failed');
-    } finally {
-      setAnalyzing(false);
-    }
-  };
-
-  const handleAIRisks = async (record: PatientMedicalHistory) => {
-    setAnalyzing(true);
-    try {
-      const risks = await aiService.predictHealthRisks(record);
-      setAiRisks(risks);
-    } catch (error) {
-      toast.error('AI Risk Prediction failed');
-    } finally {
-      setAnalyzing(false);
-    }
   };
 
   const exportPDF = (record: PatientMedicalHistory) => {
@@ -285,7 +255,7 @@ export default function MedicalHistory() {
     doc.setFontSize(10);
     doc.setTextColor(100);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 28);
-    doc.text('PharmaCare AI - Your Health Companion', 14, 33);
+    doc.text('PharmaCare - Evidence-Based Health Records', 14, 33);
     
     doc.setDrawColor(200);
     doc.line(14, 38, 196, 38);

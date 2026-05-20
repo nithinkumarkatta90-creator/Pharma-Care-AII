@@ -6,26 +6,16 @@ import { Toaster } from './components/ui/sonner';
 import { ThemeProvider } from 'next-themes';
 import SplashScreen from './components/SplashScreen';
 import { ErrorBoundary } from './components/ErrorBoundary';
-
 import Layout from './components/Layout';
 
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 const PatientProfile = lazy(() => import('./pages/PatientProfile'));
 const MedicationEntry = lazy(() => import('./pages/MedicationEntry'));
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const LabReports = lazy(() => import('./pages/LabReports'));
-const DietPlans = lazy(() => import('./pages/DietPlans'));
-const DietPlanGenerate = lazy(() => import('./pages/DietPlanGenerate'));
-const DietPlanView = lazy(() => import('./pages/DietPlanView'));
-const DietHistory = lazy(() => import('./pages/DietHistory'));
 const MedicalProfile = lazy(() => import('./pages/MedicalProfile'));
-const QRScanner = lazy(() => import('./pages/QRScanner'));
-const QRVerify = lazy(() => import('./pages/QRVerify'));
 const History = lazy(() => import('./pages/History'));
 const Profile = lazy(() => import('./pages/Profile'));
-const InteractionChecker = lazy(() => import('./pages/InteractionChecker'));
-const IPDatabase = lazy(() => import('./pages/IPDatabase'));
 const MedicalHistory = lazy(() => import('./pages/MedicalHistory'));
 const MedicalHistoryTimeline = lazy(() => import('./pages/MedicalHistoryTimeline'));
 const Reminders = lazy(() => import('./pages/Reminders'));
@@ -33,8 +23,18 @@ const AddReminder = lazy(() => import('./pages/AddReminder'));
 const ReminderLogs = lazy(() => import('./pages/ReminderLogs'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 const Settings = lazy(() => import('./pages/Settings'));
+
+const LabReports = lazy(() => import('./pages/LabReports'));
+const InteractionChecker = lazy(() => import('./pages/InteractionChecker'));
+const IPDatabase = lazy(() => import('./pages/IPDatabase'));
 const Nutraceuticals = lazy(() => import('./pages/Nutraceuticals'));
 const VaccineGuide = lazy(() => import('./pages/VaccineGuide'));
+
+const HealthRecords = lazy(() => import('./pages/HealthRecords'));
+const Prescriptions = lazy(() => import('./pages/Prescriptions'));
+const VaccinationRecords = lazy(() => import('./pages/VaccinationRecords'));
+const DrugRecalls = lazy(() => import('./pages/DrugRecalls'));
+const LabReference = lazy(() => import('./pages/LabReference'));
 
 interface AuthContextType {
   user: User | null;
@@ -51,8 +51,8 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
       setLoading(false);
     });
     setTimeout(() => setShowSplash(false), 2000);
@@ -72,20 +72,27 @@ export default function App() {
                 <Route path="/signup" element={<Navigate to="/" />} />
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/patient-profile" element={<PatientProfile />} />
-                  <Route path="/medication-entry" element={<MedicationEntry />} />
+
+                  {/* Personal Records */}
+                  <Route path="/health-records" element={<HealthRecords />} />
+                  <Route path="/prescriptions" element={<Prescriptions />} />
+                  <Route path="/vaccination-records" element={<VaccinationRecords />} />
+
+                  {/* Clinical Reference */}
                   <Route path="/lab-reports" element={<LabReports />} />
-                  <Route path="/nutraceuticals" element={<Nutraceuticals />} />
-                  <Route path="/vaccine-guide" element={<VaccineGuide />} />
                   <Route path="/interaction" element={<InteractionChecker />} />
                   <Route path="/ip-database" element={<IPDatabase />} />
-                  <Route path="/diet-plans" element={<DietPlans />} />
-                  <Route path="/diet-plan-generate" element={<DietPlanGenerate />} />
-                  <Route path="/diet-plan-view/:planId" element={<DietPlanView />} />
-                  <Route path="/diet-history" element={<DietHistory />} />
+                  <Route path="/lab-reference" element={<LabReference />} />
+                  <Route path="/drug-recalls" element={<DrugRecalls />} />
+
+                  {/* Health & Nutrition */}
+                  <Route path="/nutraceuticals" element={<Nutraceuticals />} />
+                  <Route path="/vaccine-guide" element={<VaccineGuide />} />
+
+                  {/* Management */}
                   <Route path="/medical-profile" element={<MedicalProfile />} />
-                  <Route path="/qr-scanner" element={<QRScanner />} />
-                  <Route path="/qr-verification" element={<QRVerify />} />
+                  <Route path="/patient-profile" element={<PatientProfile />} />
+                  <Route path="/medication-entry" element={<MedicationEntry />} />
                   <Route path="/history" element={<History />} />
                   <Route path="/medical-history" element={<MedicalHistory />} />
                   <Route path="/medical-history-timeline" element={<MedicalHistoryTimeline />} />

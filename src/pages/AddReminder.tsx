@@ -6,7 +6,6 @@ import {
   Clock, 
   Plus, 
   X, 
-  Sparkles,
   Loader2,
   AlertCircle
 } from 'lucide-react';
@@ -24,11 +23,9 @@ import {
 import { Textarea } from '../components/ui/textarea';
 import { useAuth } from '../App';
 import { reminderService } from '../services/reminderService';
-import { aiService } from '../services/aiService';
 import { Reminder, MedicineType, Frequency, BeforeAfterFood, RepeatType } from '../types/reminder';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
-import Markdown from 'react-markdown';
 
 export default function AddReminder() {
   const { user } = useAuth();
@@ -36,8 +33,6 @@ export default function AddReminder() {
   const { id } = useParams();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Omit<Reminder, 'id' | 'uid' | 'createdAt' | 'updatedAt'>>({
     medicineName: location.state?.title || '',
@@ -102,26 +97,6 @@ export default function AddReminder() {
     const newTimes = [...formData.times];
     newTimes[index] = value;
     setFormData(prev => ({ ...prev, times: newTimes }));
-  };
-
-  const getAiSuggestion = async () => {
-    if (!formData.medicineName) {
-      toast.error('Please enter a medicine name first');
-      return;
-    }
-    setAiLoading(true);
-    try {
-      const suggestion = await aiService.suggestMedicineSchedule(
-        formData.medicineName,
-        'General Health',
-        formData.frequency
-      );
-      setAiSuggestion(suggestion);
-    } catch (error) {
-      toast.error('Failed to get AI suggestion');
-    } finally {
-      setAiLoading(false);
-    }
   };
 
   return (
@@ -301,56 +276,29 @@ export default function AddReminder() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="bg-gradient-to-br from-indigo-600 to-blue-700 text-white border-none shadow-xl">
+          <Card className="bg-gradient-to-br from-teal-600 to-cyan-700 text-white border-none shadow-xl">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-white/20 rounded-lg">
-                  <Sparkles className="w-6 h-6 text-white" />
+                  <Clock className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold">AI Schedule Suggestion</h3>
+                <h3 className="text-xl font-bold">Dosage Schedule Tips</h3>
               </div>
-              <p className="text-blue-100 text-sm mb-6 leading-relaxed">
-                Not sure when to take your medicine? Let our AI suggest the optimal schedule based on clinical data.
-              </p>
-              <Button 
-                variant="secondary" 
-                className="w-full bg-white text-blue-700 hover:bg-blue-50 font-bold h-12"
-                onClick={getAiSuggestion}
-                disabled={aiLoading}
-              >
-                {aiLoading ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Sparkles className="w-5 h-5 mr-2" />}
-                Get AI Suggestion
-              </Button>
+              <ul className="text-teal-100 text-sm space-y-2 leading-relaxed list-disc list-inside">
+                <li>Always follow your doctor's prescribed schedule</li>
+                <li>Tablets marked "after food" should be taken within 30 min of eating</li>
+                <li>Antibiotics — complete the full course even if you feel better</li>
+                <li>Set reminders at the same time daily for consistency</li>
+              </ul>
             </CardContent>
           </Card>
-
-          {aiSuggestion && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <Card className="border-blue-100 bg-blue-50/50">
-                <CardHeader>
-                  <CardTitle className="text-blue-900 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-blue-600" />
-                    AI Recommendation
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose prose-sm prose-blue max-w-none text-slate-700">
-                    <Markdown>{aiSuggestion}</Markdown>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
 
           <div className="p-6 bg-amber-50 rounded-2xl border border-amber-100 flex gap-4">
             <AlertCircle className="w-6 h-6 text-amber-600 shrink-0" />
             <div>
-              <h4 className="font-bold text-amber-900 mb-1">Important Disclaimer</h4>
+              <h4 className="font-bold text-amber-900 mb-1">Important Reminder</h4>
               <p className="text-xs text-amber-800 leading-relaxed">
-                Always follow your doctor's prescription. AI suggestions are for informational purposes and should be verified with a healthcare professional.
+                Always follow your doctor's prescription. Do not adjust doses without consulting your prescribing physician or pharmacist.
               </p>
             </div>
           </div>
